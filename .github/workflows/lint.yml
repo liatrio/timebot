@@ -6,7 +6,7 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    container: node:14.7.0
+    container: node:18.16.0
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
