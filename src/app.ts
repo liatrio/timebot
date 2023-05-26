@@ -43,10 +43,10 @@ webserver.get("/health", async (_: any, res: any) => {
   } catch (e: any) {
     status_checks.slack_auth = e.message;
   }
-  
-  status_checks.slack_websocket_connection = app.receiver.client.badConnection
-    ? "Connection Failed"
-    : "OK";
+//   this one doesn't work in typescript atm
+//   status_checks.slack_websocket_connection = app.receiver.client.badConnection
+//     ? "Connection Failed"
+//     : "OK";
   
   for (const i in status_checks) {
     if (status_checks[i] !== "OK") {
