@@ -1,7 +1,7 @@
-const { createLogger, format, transports } = require("winston");
+import { createLogger, format, transports } from "winston";
 const { combine, timestamp, json } = format;
 
-const config = require("./config");
+import config from "./config";
 
 const loggingLevel = config.logLevel;
 
