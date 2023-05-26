@@ -33,8 +33,8 @@ resource "azurerm_app_service" "timebot_app_service" {
   app_settings = {
     "APP_TOKEN"                   = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.app_token.id})"
     "BOT_USER_OAUTH_ACCESS_TOKEN" = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.bot_user_token.id})"
-	  "HARVEST_TOKEN"               = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.harvest_token.id})"
-	  "HARVEST_ID"                  = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.harvest_id.id})"
+    "HARVEST_TOKEN"               = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.harvest_token.id})"
+    "HARVEST_ID"                  = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.harvest_id.id})"
     "LOG_LEVEL"                   = var.timebot_log_level
   }
 }
