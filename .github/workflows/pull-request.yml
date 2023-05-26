@@ -1,0 +1,105 @@
+name: "pull request"
+on:
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "README.md"
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/timebot
+
+jobs:
+  setup:
+    name: Pipeline Setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Generate tag
+        id: tag
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+    outputs:
+      docker-tag: ${{ steps.tag.outputs.sha_short }}
+
+  build:
+    name: Docker
+    needs: setup
+    uses: liatrio/github-workflows/.github/workflows/docker-build.yaml@main
+    with:
+      repository: ghcr.io/liatrio
+      image-name: timebot
+      tag: ${{ needs.setup.outputs.docker-tag }}
+
+  fmt:
+    name: "Terraform fmt check"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Terraform fmt check
+        run: terraform fmt -check -recursive
+
+  validate:
+    name: "Terraform validate check"
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Terragrunt
+        run: |
+          wget https://github.com/gruntwork-io/terragrunt/releases/download/v0.45.11/terragrunt_linux_amd64
+          sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
+          sudo chmod +x /usr/local/bin/terragrunt
+      - name: Terraform validate check
+        run: terragrunt validate
+        working-directory: infra/terragrunt/nonprod/timebot/
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_TENANT_ID: "1b4a4fed-fed8-4823-a8a0-3d5cea83d122"
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_NONPROD_SUBSCRIPTION_ID }}
+          TF_VAR_acr_subscription_id: ${{ secrets.AZURE_NONPROD_SUBSCRIPTION_ID }}
+          TF_VAR_timebot_image: "${{ env.IMAGE_NAME }}:${{ needs.build.outputs.docker_tag }}"
+          TF_VAR_app_token: ${{ secrets.NONPROD_APP_TOKEN }}
+          TF_VAR_bot_user_token: ${{ secrets.NONPROD_BOT_TOKEN }}
+          TF_VAR_harvest_token: ${{ secrets.NONPROD_HARVEST_TOKEN }}
+          TF_VAR_harvest_id: ${{ secrets.NONPROD_HARVEST_ID }}
+  plan:
+    name: "Terraform Nonprod plan"
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Terragrunt
+        run: |
+          wget https://github.com/gruntwork-io/terragrunt/releases/download/v0.45.11/terragrunt_linux_amd64
+          sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
+          sudo chmod +x /usr/local/bin/terragrunt
+      - name: Plan Gratibot staging deployment
+        id: plan_timebot_staging_deployment
+        working-directory: infra/terragrunt/nonprod/timebot/
+        run: |
+          terragrunt plan -out plan.out
+          terragrunt show -no-color -json plan.out > plan.json
+        continue-on-error: true
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_TENANT_ID: "1b4a4fed-fed8-4823-a8a0-3d5cea83d122"
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_NONPROD_SUBSCRIPTION_ID }}
+          TF_VAR_acr_subscription_id: ${{ secrets.AZURE_NONPROD_SUBSCRIPTION_ID }}
+          TF_VAR_timebot_image: "${{ env.IMAGE_NAME }}:${{ needs.build.outputs.docker_tag }}"
+          TF_VAR_app_token: ${{ secrets.NONPROD_APP_TOKEN }}
+          TF_VAR_bot_user_token: ${{ secrets.NONPROD_BOT_TOKEN }}
+          TF_VAR_harvest_token: ${{ secrets.NONPROD_HARVEST_TOKEN }}
+          TF_VAR_harvest_id: ${{ secrets.NONPROD_HARVEST_ID }}
+
+      - uses: liatrio/terraform-change-pr-commenter@v1.4.1
+        with:
+          json-file: infra/terragrunt/nonprod/timebot/plan.json
+          expand-comment: 'true'
+
+      - name: Status
+        if: contains(steps.*.outcome, 'failure')
+        run: exit 1
