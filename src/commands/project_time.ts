@@ -117,45 +117,14 @@ async function gatherInformation(projectName: any, message: any, client: any) {
           active: timeEntry.user_assignment.is_active,
           spent: 0,
           budget: timeEntry.user_assignment.budget
-        },
-        tasks: {}
-      };
-    }
-
-    if(!timeBuckets[timeEntry.user.id].tasks[timeEntry.task_assignment.id]) {
-      timeBuckets[timeEntry.user.id].tasks[timeEntry.task_assignment.id] = {
-        active: timeEntry.task_assignment.is_active,
-        spent: 0,
-        budget: timeEntry.task_assignment.budget,
-        name: timeEntry.task.name
+        }
       };
     }
 
     timeBuckets[timeEntry.user.id].project.spent += timeEntry.hours;
-    timeBuckets[timeEntry.user.id].tasks[timeEntry.task_assignment.id].spent += timeEntry.hours;
   }
 
-  return [harvestUserId, timeBuckets];
-}
-
-function formatTimeTable(bucket: any) {
-  const taskTime = [];
-
-  for(const task in bucket.tasks) {
-    const taskEntry = bucket.tasks[task];
-    taskTime.push(["", taskEntry.name, `${taskEntry.spent} / ${taskEntry.budget}`]);
-  }
-
-  const myTaskTime = table(taskTime, {
-      border: getBorderCharacters('void'),
-      columnDefault: {
-          paddingLeft: 4,
-          paddingRight: 0
-      },
-      drawHorizontalLine: () => false
-    });
-
-    return myTaskTime;
+  return [harvestUserId, timeBuckets, harvestProject];
 }
 
 async function respond({ message, client }: any) {
@@ -167,16 +136,15 @@ async function respond({ message, client }: any) {
 
   const projectName = getProjectNameFromMessage(message.text);
 
-  const [harvestUserId, timeBuckets]: any = await gatherInformation(projectName, message, client);
+  const [harvestUserId, timeBuckets, harvestProject]: any = await gatherInformation(projectName, message, client);
 
   const myBucket = timeBuckets[harvestUserId];
-  
-  const myTaskTime = formatTimeTable(myBucket);
 
-  let response = `\n\nMy Report:\n${myBucket.project.name}: ${myBucket.project.spent} / ${myBucket.project.budget}\n${myTaskTime}`
+  let response = "";
 
-  if(myBucket.level === "manager") {
-    response = `${response}\n\nReports:\n`;
+  if(myBucket.level !== "manager") {    
+    let reports = "";
+    let totalSpent = myBucket.project.spent;
 
     for(const id in timeBuckets) {
       const bucket = timeBuckets[id];
@@ -185,10 +153,13 @@ async function respond({ message, client }: any) {
         continue;
       }
 
-      const taskTime = formatTimeTable(bucket);
-
-      response = `${response}\n${bucket.name}: ${bucket.project.spent} / ${bucket.project.budget}\n${taskTime}\n`;
+      totalSpent += bucket.project.spent;
+      reports = `${reports}\n- ${bucket.name}: ${bucket.project.spent} / ${bucket.project.budget}\n`;
     }
+
+    response = `${myBucket.project.name}: ${totalSpent} / ${harvestProject.budget}\n\nMy Time: ${myBucket.project.spent} / ${myBucket.project.budget}\n\nReports:\n${reports}`;
+  } else {
+    response = `${myBucket.project.name}: ${myBucket.project.spent} / ${myBucket.project.budget}`;
   }
 
   await client.chat.postEphemeral({

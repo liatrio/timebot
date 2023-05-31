@@ -1,4 +1,4 @@
-import { getUserList, getProjectList, getProjectUserAssignments } from "../external/harvest";
+import { getUserList, getProjectList } from "../external/harvest";
 
 
 export async function getUserIdByEmail(email: string) {
@@ -13,7 +13,7 @@ export async function getUserIdByEmail(email: string) {
 
 export async function getProjectByName(name: string) {
 	const projectList: any = await getProjectList(false);
-	let projectMatches = [];
+	const projectMatches = [];
 
 	for(const project of projectList.projects) {
 		const regex = new RegExp(`.*${name}.*`, "gi");
