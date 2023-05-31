@@ -13,10 +13,14 @@ export async function getUserIdByEmail(email: string) {
 
 export async function getProjectByName(name: string) {
 	const projectList: any = await getProjectList(false);
+	let projectMatches = [];
 
 	for(const project of projectList.projects) {
-		if(project.name === name) {
-			return project;
+		const regex = new RegExp(`.*${name}.*`, "gi");
+		if(project.name.match(regex)) {
+			projectMatches.push(project);
 		}
 	}
+	
+	return projectMatches;
 }

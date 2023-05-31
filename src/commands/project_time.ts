@@ -34,20 +34,28 @@ async function getSlackUserInfo(message: any, client: any) {
 }
 
 async function getHarvestProject(project: any, message: any, client: any) {
-  const harvestProjectId = await getProjectByName(project);
+  const harvestProjects = await getProjectByName(project);
 
-  if (harvestProjectId) {
-    return harvestProjectId;
+  if(!harvestProjects) {
+   logger.error(`Could not find a project in Harvest: ${project}`, {
+      func: "feature.project_time.respond"
+    });
+
+    await client.chat.postEphemeral({
+      channel: message.channel,
+      user: message.user,
+      text: `Could not find a project in Harvest: ${project}`,
+    });
   }
 
-  logger.error(`Could not find a project in Harvest: ${project}`, {
-    func: "feature.project_time.respond"
-  });
+  if (harvestProjects.length == 1) {
+    return harvestProjects[0];
+  }
 
   await client.chat.postEphemeral({
     channel: message.channel,
     user: message.user,
-    text: `Could not find a project in Harvest: ${project}`,
+    text: `There is more than one project with a name that matches the pattern: /.*${project}.*/gi, please try being more specific.`,
   });
   
   return;
@@ -104,6 +112,7 @@ async function gatherInformation(projectName: any, message: any, client: any) {
       timeBuckets[timeEntry.user.id] = {
         name: timeEntry.user.name,
         project: {
+          name: harvestProject.name,
           level: timeEntry.user_assignment.is_project_manager ? "manager" : "worker",
           active: timeEntry.user_assignment.is_active,
           spent: 0,
@@ -164,7 +173,7 @@ async function respond({ message, client }: any) {
   
   const myTaskTime = formatTimeTable(myBucket);
 
-  let response = `\n\nMy Report:\n${projectName}: ${myBucket.project.spent} / ${myBucket.project.budget}\n${myTaskTime}`
+  let response = `\n\nMy Report:\n${myBucket.project.name}: ${myBucket.project.spent} / ${myBucket.project.budget}\n${myTaskTime}`
 
   if(myBucket.level === "manager") {
     response = `${response}\n\nReports:\n`;
