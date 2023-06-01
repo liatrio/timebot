@@ -59,6 +59,7 @@ jobs:
           TF_VAR_bot_user_token: ${{ secrets.NONPROD_BOT_TOKEN }}
           TF_VAR_harvest_token: ${{ secrets.NONPROD_HARVEST_TOKEN }}
           TF_VAR_harvest_id: ${{ secrets.NONPROD_HARVEST_ID }}
+          TF_VAR_harvest_url: "https://api.harvestapp.com/v2/"
   release:
     name: "Create Release"
     runs-on: ubuntu-latest

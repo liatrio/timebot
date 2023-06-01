@@ -58,6 +58,7 @@ jobs:
           TF_VAR_bot_user_token: ${{ secrets.PROD_PLAN_BOT_TOKEN }}
           TF_VAR_harvest_token: ${{ secrets.PROD_HARVEST_TOKEN }}
           TF_VAR_harvest_id: ${{ secrets.PROD_HARVEST_ID }}
+          TF_VAR_harvest_url: "https://api.harvestapp.com/v2/"
   apply:
     name: "Terraform Prod Apply"
     runs-on: ubuntu-latest
@@ -87,3 +88,4 @@ jobs:
           TF_VAR_bot_user_token: ${{ secrets.PROD_BOT_TOKEN }}
           TF_VAR_harvest_token: ${{ secrets.PROD_HARVEST_TOKEN }}
           TF_VAR_harvest_id: ${{ secrets.PROD_HARVEST_ID }}
+          TF_VAR_harvest_url: "https://api.harvestapp.com/v2/"

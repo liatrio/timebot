@@ -67,6 +67,12 @@ variable "harvest_id" {
   sensitive   = true
 }
 
+variable "harvest_url" {
+  description = "Harvest REST API URL"
+  type        = string
+  default     = "https://api.harvestapp.com/v2/"
+}
+
 variable "timebot_log_level" {
   description = "Logging level to use for Timebot service"
   type        = string
