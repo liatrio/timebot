@@ -2,12 +2,13 @@ import { App } from "@slack/bolt";
 import express from "express";
 import logger from "./logger";
 import * as path from "path";
+import * as dotenv from "dotenv";
 import { readdirSync } from "fs";
 
 const webserver = express();
 
 if (process.env.NODE_ENV !== 'production') {
-  import("dotenv").then(mod => mod.config());
+  dotenv.config();
 }
 
 const app = new App({
@@ -69,7 +70,7 @@ const normalizedPath = path.join(__dirname, "commands");
 readdirSync(normalizedPath)
   .forEach(function (file: string) {
     if(file.endsWith(".ts")) {
-      import("./commands/" + file).then(mod => mod());
+      import("./commands/" + file).then(mod => mod.default(app));
     }
   });
 
