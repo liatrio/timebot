@@ -13,7 +13,7 @@ function buildHarvestUri(endpoint: string) {
 	return process.env.HARVEST_API_URL + endpoint;
 }
 
-export async function getUserTimeEntries(userId: string, from: Date, to: Date) {
+export async function getUserTimeEntries(userId: string, from: string, to: string) {
 	const requestOpts: any = getHarvestRequestOpts("GET");
 	const endpoint = "time_entries?user_id=" + userId + "&from=" + from + "&to=" + to;
 	const uri = buildHarvestUri(endpoint);
