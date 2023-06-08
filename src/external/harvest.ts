@@ -58,6 +58,24 @@ export async function getUserProjectAssignments(userId: string) {
 	return await response.json();
 }
 
+export async function getActiveUserAssignments(userId: string) {
+	const requestOpts: any = getHarvestRequestOpts("GET");
+	const endpoint = "user_assignments?is_active=true&user_id=" + userId;
+	const uri = buildHarvestUri(endpoint);
+	const response = await fetch(uri, requestOpts);
+
+	return await response.json();
+}
+
+export async function getActiveProjectTimeEntries(userId: string, projectId: string) {
+	const requestOpts: any = getHarvestRequestOpts("GET");
+	const endpoint = "time_entries?user_id=" + userId + "&project_id=" + projectId;
+	const uri = buildHarvestUri(endpoint);
+	const response = await fetch(uri, requestOpts);
+
+	return await response.json();
+}
+
 export async function getProjectUserAssignments(projectId: string, onlyActive = false) {
 	const requestOpts: any = getHarvestRequestOpts("GET");
 	const endpoint = onlyActive ? "projects/" + projectId + "/user_assignments?is_active=true" : "projects/" + projectId + "/user_assignments";
