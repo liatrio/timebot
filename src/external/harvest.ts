@@ -13,7 +13,7 @@ function buildHarvestUri(endpoint: string) {
 	return process.env.HARVEST_API_URL + endpoint;
 }
 
-export async function getUserTimeEntries(userId: string, from: Date, to: Date) {
+export async function getUserTimeEntries(userId: string, from: string, to: string) {
 	const requestOpts: any = getHarvestRequestOpts("GET");
 	const endpoint = "time_entries?user_id=" + userId + "&from=" + from + "&to=" + to;
 	const uri = buildHarvestUri(endpoint);
@@ -52,6 +52,24 @@ export async function getProjectList(onlyActive = false) {
 export async function getUserProjectAssignments(userId: string) {
 	const requestOpts: any = getHarvestRequestOpts("GET");
 	const endpoint = "users/" + userId + "/project_assignments";
+	const uri = buildHarvestUri(endpoint);
+	const response = await fetch(uri, requestOpts);
+
+	return await response.json();
+}
+
+export async function getActiveUserAssignments(userId: string) {
+	const requestOpts: any = getHarvestRequestOpts("GET");
+	const endpoint = "user_assignments?is_active=true&user_id=" + userId;
+	const uri = buildHarvestUri(endpoint);
+	const response = await fetch(uri, requestOpts);
+
+	return await response.json();
+}
+
+export async function getActiveProjectTimeEntries(userId: string, projectId: string) {
+	const requestOpts: any = getHarvestRequestOpts("GET");
+	const endpoint = "time_entries?user_id=" + userId + "&project_id=" + projectId;
 	const uri = buildHarvestUri(endpoint);
 	const response = await fetch(uri, requestOpts);
 

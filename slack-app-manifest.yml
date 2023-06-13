@@ -1,11 +1,11 @@
 _metadata:
 	major_version: 1
 	minor_version: 1
-  display_information:
+display_information:
 	name: ${botname}
 	description: Get reports of your time or project time
 	background_color: "#000000"
-  features:
+features:
 	app_home:
 	  home_tab_enabled: false
 	  messages_tab_enabled: true
@@ -13,7 +13,7 @@ _metadata:
 	bot_user:
 	  display_name: ${botname}
 	  always_online: true
-  oauth_config:
+oauth_config:
 	scopes:
 	  bot:
 		- app_mentions:read
@@ -33,7 +33,7 @@ _metadata:
 		- usergroups:read
 		- users:read
 		- users:read.email
-  settings:
+settings:
 	event_subscriptions:
 	  bot_events:
 		- app_mention
