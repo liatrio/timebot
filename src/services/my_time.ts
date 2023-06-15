@@ -28,8 +28,8 @@ export async function getMyProjects(userId: string) {
 }
 
 export async function getOptionTimes(message: string): Promise<[Date, Date]> {
-  var startDate = new Date;
-  var endDate = new Date;
+  let startDate = new Date;
+  let endDate = new Date;
   const options = message.replace(/.*mytime\s/, "").split(" ");
   if (options[1] == "mytime") {
     [startDate, endDate] = getQuarterDates();
@@ -54,11 +54,11 @@ export async function getMyTimeEntries(userId: string, startDate: Date, endDate:
 }
 
 export async function getQuarterlyTime(timeEntries: any) {
-  var quarterlyTimes: any = {};
+  let quarterlyTimes: any = {};
   quarterlyTimes["categories"] = [];
   quarterlyTimes["billable"] = 0;
 
-  for (let entry of timeEntries.time_entries) {
+  for (const entry of timeEntries.time_entries) {
     if (quarterlyTimes.categories.findIndex(((x: any) => x.name === entry.task.name)) < 0) {
       quarterlyTimes.categories.push({
         name: entry.task.name,
@@ -76,14 +76,14 @@ export async function getQuarterlyTime(timeEntries: any) {
 }
 
 export async function getActiveProjectTimes(userId: string) {
-  var activeProjectTimes: any = {};
+  let activeProjectTimes: any = {};
   activeProjectTimes["projects"] = [];
   const activeUserAssignments = await getActiveUserAssignments(userId);
 
-  for (let userAssignment of activeUserAssignments.user_assignments) {
+  for (const userAssignment of activeUserAssignments.user_assignments) {
     if (!userAssignment.project.name.includes("Liatrio")) {
       const projectTimeEntries = await getActiveProjectTimeEntries(userId, userAssignment.project.id)
-      for (let entry of projectTimeEntries.time_entries) {
+      for (const entry of projectTimeEntries.time_entries) {
         if (activeProjectTimes.projects.findIndex(((x: any) => x.name === entry.project.name)) < 0) {
           activeProjectTimes.projects.push({
             name: entry.project.name,
@@ -101,16 +101,16 @@ export async function getActiveProjectTimes(userId: string) {
 }
 
 export async function getCategoryTimeString(quarterlyTimes: any) {
-  var data = [];
-  var categoryHeaders = [];
-  var categoryTimes = [];
+  let data = [];
+  let categoryHeaders = [];
+  let categoryTimes = [];
 
-  for (let category of quarterlyTimes.categories) {
+  for (const category of quarterlyTimes.categories) {
     categoryHeaders.push(category.name);
     categoryTimes.push(category.time);
 
     if (category.name == "Utilization") {
-      var utilizationPercentage = Math.round((category.time / 430) * 100);
+      const utilizationPercentage = Math.round((category.time / 430) * 100);
       categoryHeaders.push("Billable");
       categoryHeaders.push("Utilization %")
       categoryTimes.push(quarterlyTimes.billable);
@@ -125,10 +125,10 @@ export async function getCategoryTimeString(quarterlyTimes: any) {
 }
 
 export async function getProjectTimeString(quarterlyTimes: any) {
-  var data = [];
+  let data = [];
   data.push(["Project", "Time", "Budget"]);
 
-  for (let project of quarterlyTimes.projects) {
+  for (const project of quarterlyTimes.projects) {
     data.push([project.name, project.time, project.budget]);
   }
 
