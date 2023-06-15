@@ -1,11 +1,9 @@
 import { table } from 'table';
 import { getUserProjectAssignments, getUserTimeEntries, getActiveUserAssignments, getActiveProjectTimeEntries } from "../external/harvest";
-import logger from "../logger";
 
 export function getQuarterDates(quarter?: number, year?: number): [Date, Date] {
   const currentYear = new Date().getFullYear();
   const currentQuarter = Math.ceil((new Date().getMonth() + 1) / 3);
-  logger.info("currentYear: " + currentYear);
 
   if (year && year.toString().length <=2) {
     year += 2000;
@@ -15,8 +13,6 @@ export function getQuarterDates(quarter?: number, year?: number): [Date, Date] {
 
   const startDate = new Date(targetYear, (targetQuarter - 1) * 3, 1);
   const endDate = targetQuarter === currentQuarter ? new Date() : new Date(targetYear, targetQuarter * 3, 0);
-  logger.info("startDate: " + startDate);
-  logger.info("endDate: " + endDate);
 
   return [startDate, endDate];
 }
@@ -36,12 +32,8 @@ export async function getOptionTimes(message: string): Promise<[Date, Date]> {
   } else {
     const quarter = parseInt(options[0].replace(/^q/, ""));
     const year = parseInt(options[1]);
-    logger.info("quarter: " + quarter);
-    logger.info("year: " + year);
     if (quarter >= 1 && quarter <= 4) {
       [startDate, endDate] = getQuarterDates(quarter, year);
-      logger.info("Start: " + startDate);
-      logger.info("End: " + endDate);
     }
   }
   return [startDate, endDate];
