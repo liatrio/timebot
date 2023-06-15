@@ -54,7 +54,7 @@ export async function getMyTimeEntries(userId: string, startDate: Date, endDate:
 }
 
 export async function getQuarterlyTime(timeEntries: any) {
-  let quarterlyTimes: any = {};
+  const quarterlyTimes: any = {};
   quarterlyTimes["categories"] = [];
   quarterlyTimes["billable"] = 0;
 
@@ -76,7 +76,7 @@ export async function getQuarterlyTime(timeEntries: any) {
 }
 
 export async function getActiveProjectTimes(userId: string) {
-  let activeProjectTimes: any = {};
+  const activeProjectTimes: any = {};
   activeProjectTimes["projects"] = [];
   const activeUserAssignments = await getActiveUserAssignments(userId);
 
@@ -101,9 +101,9 @@ export async function getActiveProjectTimes(userId: string) {
 }
 
 export async function getCategoryTimeString(quarterlyTimes: any) {
-  let data = [];
-  let categoryHeaders = [];
-  let categoryTimes = [];
+  const data = [];
+  const categoryHeaders = [];
+  const categoryTimes = [];
 
   for (const category of quarterlyTimes.categories) {
     categoryHeaders.push(category.name);
@@ -125,7 +125,7 @@ export async function getCategoryTimeString(quarterlyTimes: any) {
 }
 
 export async function getProjectTimeString(quarterlyTimes: any) {
-  let data = [];
+  const data = [];
   data.push(["Project", "Time", "Budget"]);
 
   for (const project of quarterlyTimes.projects) {
