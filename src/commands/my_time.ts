@@ -16,8 +16,8 @@ async function respondToMyTime({message, client}: any) {
     slackMessage: message.text,
   });
 
-  var returnText = "";
-  var debugMessage = "";
+  let returnText = "";
+  let debugMessage = "";
 
   const [startTime, endTime] = await getOptionTimes(message.text);
 

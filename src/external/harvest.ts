@@ -10,7 +10,7 @@ function getHarvestRequestOpts(method: string) {
 }
 
 function buildHarvestUri(endpoint: string) {
-	return process.env.HARVEST_API_URL + endpoint;
+  return process.env.HARVEST_API_URL + endpoint;
 }
 
 export async function getUserTimeEntries(userId: string, from: string, to: string) {
@@ -19,7 +19,7 @@ export async function getUserTimeEntries(userId: string, from: string, to: strin
 	const uri = buildHarvestUri(endpoint);
 	const response = await fetch(uri, requestOpts);
 
-	return await response.json();
+  return await response.json();
 }
 
 export async function getProjectTimeEntries(projectId: string) {
@@ -28,7 +28,7 @@ export async function getProjectTimeEntries(projectId: string) {
 	const uri = buildHarvestUri(endpoint);
 	const response = await fetch(uri, requestOpts);
 
-	return await response.json();
+  return await response.json();
 }
 
 export async function getUserList(onlyActive = false) {
@@ -37,7 +37,7 @@ export async function getUserList(onlyActive = false) {
 	const uri = buildHarvestUri(endpoint);
 	const response = await fetch(uri, requestOpts);
 
-	return await response.json();
+  return await response.json();
 }
 
 export async function getProjectList(onlyActive = false) {
@@ -46,7 +46,7 @@ export async function getProjectList(onlyActive = false) {
 	const uri = buildHarvestUri(endpoint);
 	const response = await fetch(uri, requestOpts);
 
-	return await response.json();
+  return await response.json();
 }
 
 export async function getUserProjectAssignments(userId: string) {
@@ -55,7 +55,7 @@ export async function getUserProjectAssignments(userId: string) {
 	const uri = buildHarvestUri(endpoint);
 	const response = await fetch(uri, requestOpts);
 
-	return await response.json();
+  return await response.json();
 }
 
 export async function getActiveUserAssignments(userId: string) {
@@ -82,5 +82,5 @@ export async function getProjectUserAssignments(projectId: string, onlyActive = 
 	const uri = buildHarvestUri(endpoint);
 	const response = await fetch(uri, requestOpts);
 
-	return await response.json();
+  return await response.json();
 }

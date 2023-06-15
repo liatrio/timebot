@@ -66,7 +66,7 @@ resource "azurerm_key_vault_secret" "harvest_token" {
 }
 
 resource "azurerm_key_vault_secret" "harvest_id" {
-  name         = "harvest_id"
+  name         = "harvest-id"
   value        = var.harvest_id
   key_vault_id = azurerm_key_vault.timebot.id
 
