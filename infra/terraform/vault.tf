@@ -1,38 +1,12 @@
-data "azurerm_client_config" "current" {}
-
-resource "azurerm_key_vault" "timebot" {
-  name                       = "timebot-${var.environment}"
-  location                   = var.location
-  resource_group_name        = var.resource_group_name
-  tenant_id                  = data.azurerm_client_config.current.tenant_id
-  sku_name                   = "standard"
-  soft_delete_retention_days = 7
+data "azurerm_key_vault" "timebot" {
+  name                = var.key_vault_name
+  resource_group_name = var.resource_group_name
 }
 
-resource "azurerm_key_vault_access_policy" "timebot_access" {
-  key_vault_id = azurerm_key_vault.timebot.id
-
-  tenant_id = azurerm_app_service.timebot_app_service.identity.0.tenant_id
-  object_id = azurerm_app_service.timebot_app_service.identity.0.principal_id
-
-  secret_permissions = [
-    "Get",
-  ]
-}
-
-resource "azurerm_key_vault_access_policy" "terraform_access" {
-  key_vault_id = azurerm_key_vault.timebot.id
-
-  tenant_id = data.azurerm_client_config.current.tenant_id
-  object_id = data.azurerm_client_config.current.object_id
-
-  secret_permissions = [
-    "Set",
-    "Get",
-    "Delete",
-    "Purge",
-    "Recover"
-  ]
+resource "azurerm_role_assignment" "timebot" {
+  scope                = data.azurerm_key_vault.timebot.id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = azurerm_app_service.timebot_app_service.identity.0.principal_id
 }
 
 resource "azurerm_key_vault_secret" "app_token" {

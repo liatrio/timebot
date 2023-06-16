@@ -9,6 +9,11 @@ variable "resource_group_name" {
   type        = string
 }
 
+variable "key_vault_name" {
+  description = "Key vault containing required Gratibot secrets"
+  type        = string
+}
+
 variable "location" {
   description = "Primary deployment region for Azure resources"
   default     = "Central US"

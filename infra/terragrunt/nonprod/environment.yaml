@@ -1,3 +1,4 @@
 state_storage_account: "timebotazuredatatfnp"
 environment: "nonprod"
 timebot_log_level: "debug"
+key_vault_name: "timebot-np"

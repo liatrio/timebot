@@ -1,3 +1,4 @@
 state_storage_account: "timebotazuredatatfpd"
 environment: "prod"
 instance_capacity: "2"
+key_vault_name: "timebot-p"
