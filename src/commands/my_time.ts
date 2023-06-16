@@ -37,7 +37,17 @@ async function respondToMyTime({message, client}: any) {
 
       const projectTimeString = await getProjectTimeString(activeProjectTime);
 
-      returnText = "```" + categoryTimeString + "\n\n" + projectTimeString + "```";
+      returnText = "```Time Summary for " + startTime.toLocaleDateString() + " - " + endTime.toLocaleDateString() + ":\n" + categoryTimeString;
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if(endTime >= today) {
+        returnText += "\n\nCurrently Active Projects:\n" + projectTimeString + "```";
+      } else {
+        returnText += "```";
+      }
+
       debugMessage = "Successfully posted ephemeral my time result to Slack.";
     } else {
       returnText = "There were no time entries for the specified time.";
