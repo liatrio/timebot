@@ -82,7 +82,13 @@ async function getHarvestUserId(slackUserInfo: any, message: any, client: any) {
 }
 
 function getProjectNameFromMessage(message: string) {
-  return message.replace(/.*projtime\s/, "");
+  const projectName = message.replace(/.*projtime\s/, "");
+
+  if(projectName === message) {
+    return "";
+  }
+
+  return projectName;
 }
 
 async function gatherInformation(projectName: any, message: any, client: any) {
@@ -127,6 +133,14 @@ async function gatherInformation(projectName: any, message: any, client: any) {
   return [harvestUserId, timeBuckets, harvestProject];
 }
 
+function getBudgetText(budget: any) {
+  if(budget === 0 || budget === "0" || !budget) {
+    return "unlimited";
+  }
+
+  return budget;
+}
+
 async function respond({ message, client }: any) {
   logger.info("@timebot project_time Called", {
     func: "feature.project_time.respond",
@@ -136,31 +150,57 @@ async function respond({ message, client }: any) {
 
   const projectName = getProjectNameFromMessage(message.text);
 
+  if(projectName === "") {
+    logger.error(`No project name supplied in message: ${message}`, {
+      func: "feature.project_time.respond"
+    });
+
+    await client.chat.postEphemeral({
+      channel: message.channel,
+      user: message.user,
+      text: `No project name supplied in message: ${message.text}`,
+    });
+
+    return;
+  }
+
   const [harvestUserId, timeBuckets, harvestProject]: any = await gatherInformation(projectName, message, client);
 
   const myBucket = timeBuckets[harvestUserId];
 
-  let response = "";
+  let response = "";  
+  const data = [];
+  const reports = [];
 
-  if(myBucket.level !== "manager") {    
-    let reports = "";
-    let totalSpent = myBucket.project.spent;
+  data.push(["Project", "Time", "Budget"]);
+
+  if(myBucket.level === "manager") {
+    let totalSpent = 0;
+
+    reports.push(["Report", "Time", "Budget"]);
 
     for(const id in timeBuckets) {
       const bucket = timeBuckets[id];
-
-      if(bucket === myBucket) {
-        continue;
-      }
+      const budget = getBudgetText(bucket.project.budget);
 
       totalSpent += bucket.project.spent;
-      reports = `${reports}\n- ${bucket.name}: ${bucket.project.spent} / ${bucket.project.budget}\n`;
+      
+      reports.push([bucket.name, bucket.project.spent, budget]);
     }
 
-    response = `${myBucket.project.name}: ${totalSpent} / ${harvestProject.budget}\n\nMy Time: ${myBucket.project.spent} / ${myBucket.project.budget}\n\nReports:\n${reports}`;
+    const projectBudget = getBudgetText(harvestProject.budget);
+
+    data.push([myBucket.project.name, totalSpent, projectBudget]);
   } else {
-    response = `${myBucket.project.name}: ${myBucket.project.spent} / ${myBucket.project.budget}`;
+    const budget = getBudgetText(myBucket.project.budget);
+
+    data.push([myBucket.project.name, myBucket.project.spent, budget]);
   }
+    
+  const overall = table(data);
+  const individual = reports.length > 0 ? "\n\n" + table(reports) : "";
+
+  response = `\`\`\`${overall}${individual}\`\`\``;
 
   await client.chat.postEphemeral({
     channel: message.channel,
