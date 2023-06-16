@@ -60,7 +60,7 @@ export async function getQuarterlyTime(timeEntries: any) {
     const categoryIndex = quarterlyTimes.categories.findIndex(((x: any) => x.name == entry.task.name));
     quarterlyTimes.categories[categoryIndex].time += entry.hours;
     if (timeEntries.billable == "true") {
-      quarterlyTimes["billable"] += 0;
+      quarterlyTimes["billable"] += entry.hours;
     }
   }
 
