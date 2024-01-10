@@ -22,7 +22,7 @@ jobs:
       - name: Unlock Timebot
         working-directory: infra/terragrunt/nonprod/timebot/
         run: |
-          terragrunt force-unlock 7ee8ff6e-63b0-0e3c-1f48-4fe90c7ab8de
+          terragrunt force-unlock -force 7ee8ff6e-63b0-0e3c-1f48-4fe90c7ab8de
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
