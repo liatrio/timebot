@@ -55,7 +55,7 @@
     "@semantic-release/commit-analyzer": "^10.0.1",
     "@semantic-release/github": "^9.0.3",
     "@semantic-release/release-notes-generator": "^11.0.3",
-    "@slack/bolt": "^3.13.1",
+    "@slack/bolt": "^3.17.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "table": "^6.8.1",
