@@ -19,6 +19,10 @@ jobs:
           wget https://github.com/gruntwork-io/terragrunt/releases/download/v0.54.12/terragrunt_linux_amd64
           sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
           sudo chmod +x /usr/local/bin/terragrunt
+      - name: Unlock Timebot
+        working-directory: infra/terragrunt/nonprod/timebot/
+        run: |
+          terragrunt force-unlock 7ee8ff6e-63b0-0e3c-1f48-4fe90c7ab8de
       - name: Plan Timebot Destroy
         working-directory: infra/terragrunt/nonprod/timebot/
         run: |
